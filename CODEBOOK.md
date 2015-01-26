@@ -21,44 +21,41 @@ col_mean_std：过滤原测量特征中带有mean()或者std()的特征的列
 X_mean_std：存储原数据经过上边列过滤后的数据（66列）
 activity_labels：读取activity_labels.txt文件，其中记录activity的号码和名称的对应关系
 y_activity_names：存储将y中activity由号码转变为名称后的标记数据
-data_set：将过滤完后的特征和转换完的标记存在一起
-second_data_set：要求的最后结果，每个activity每个subject对应的平均数
+data_set：将过滤完后的特征，转换完的标记，和subject信息存在一起
+melt_data：融合数据信息，将原来传感器中的特征作为测量信息展开，要求全排列的两列作为id
+second_data_set：要求的最后结果，同一组activity，subject对应的测量平均数
 
 
 ###3.生成数据说明
-该数据为66行6列的dataframe格式数据
-每一行代表使用传感器测量的一种数据，其中平均值和标准差的共66种
-每一列代表一种activity,共6种
-中间的数值代表该种activity该种测量的平均值
+该数据为180行68列的dataframe格式数据
+每一行代表同一组subject和activity使用传感器测量的数据的平均值，所以全排列共有30*6=180行
+每一列代表一个特征其中前两列为activity和subject，即要求全排列的两个特征，其他的为带有mean()或者std()信息的传感器特征66列，所以共2+66=68列
 具体传感器测量的名称的意义见附录
 
-*其中结果中行名称分别为
- [1] "tBodyAcc.mean...X"          [2] "tBodyAcc.mean...Y"            [3] "tBodyAcc.mean...Z"          
- [4] "tBodyAcc.std...X"           [5] "tBodyAcc.std...Y"             [6] "tBodyAcc.std...Z"           
- [7] "tGravityAcc.mean...X"       [8] "tGravityAcc.mean...Y"         [9] "tGravityAcc.mean...Z"       
-[10] "tGravityAcc.std...X"       [11] "tGravityAcc.std...Y"         [12] "tGravityAcc.std...Z"        
-[13] "tBodyAccJerk.mean...X"     [14]  "tBodyAccJerk.mean...Y"      [15]   "tBodyAccJerk.mean...Z"      
-[16] "tBodyAccJerk.std...X"      [17]  "tBodyAccJerk.std...Y"       [18]  "tBodyAccJerk.std...Z"       
-[19] "tBodyGyro.mean...X"        [20]  "tBodyGyro.mean...Y"         [21]  "tBodyGyro.mean...Z"         
-[22] "tBodyGyro.std...X"         [23]  "tBodyGyro.std...Y"          [24]  "tBodyGyro.std...Z"          
-[25] "tBodyGyroJerk.mean...X"    [26]   "tBodyGyroJerk.mean...Y"    [27]   "tBodyGyroJerk.mean...Z"     
-[28] "tBodyGyroJerk.std...X"     [29]   "tBodyGyroJerk.std...Y"     [30]   "tBodyGyroJerk.std...Z"      
-[31] "tBodyAccMag.mean.."        [32]   "tBodyAccMag.std.."         [33]  "tGravityAccMag.mean.."      
-[34] "tGravityAccMag.std.."      [35]   "tBodyAccJerkMag.mean.."    [36]   "tBodyAccJerkMag.std.."      
-[37] "tBodyGyroMag.mean.."       [38]   "tBodyGyroMag.std.."        [39]   "tBodyGyroJerkMag.mean.."    
-[40] "tBodyGyroJerkMag.std.."    [41]   "fBodyAcc.mean...X"         [42]   "fBodyAcc.mean...Y"          
-[43] "fBodyAcc.mean...Z"         [44]   "fBodyAcc.std...X"          [45]   "fBodyAcc.std...Y"           
-[46] "fBodyAcc.std...Z"          [47]   "fBodyAccJerk.mean...X"     [48]   "fBodyAccJerk.mean...Y"      
-[49] "fBodyAccJerk.mean...Z"     [50]   "fBodyAccJerk.std...X"      [51]   "fBodyAccJerk.std...Y"       
-[52] "fBodyAccJerk.std...Z"      [53]   "fBodyGyro.mean...X"        [54]   "fBodyGyro.mean...Y"         
-[55] "fBodyGyro.mean...Z"        [56]  "fBodyGyro.std...X"          [57]  "fBodyGyro.std...Y"          
-[58] "fBodyGyro.std...Z"         [59]   "fBodyAccMag.mean.."        [60]   "fBodyAccMag.std.."          
-[61] "fBodyBodyAccJerkMag.mean.."[62]  "fBodyBodyAccJerkMag.std.."  [63]  "fBodyBodyGyroMag.mean.."    
-[64] "fBodyBodyGyroMag.std.."    [65]  "fBodyBodyGyroJerkMag.mean.."[66] "fBodyBodyGyroJerkMag.std.." 
-
 *其中结果列名称分别为
-[1] "WALKING"          [2] "WALKING_UPSTAIRS"   [3] "WALKING_DOWNSTAIRS" [4] "SITTING"           
-[5] "STANDING"         [6] "LAYING"
+ [1] "y_activity_names"            "subject$V1"                  "tBodyAcc.mean...X"          
+ [4] "tBodyAcc.mean...Y"           "tBodyAcc.mean...Z"           "tBodyAcc.std...X"           
+ [7] "tBodyAcc.std...Y"            "tBodyAcc.std...Z"            "tGravityAcc.mean...X"       
+[10] "tGravityAcc.mean...Y"        "tGravityAcc.mean...Z"        "tGravityAcc.std...X"        
+[13] "tGravityAcc.std...Y"         "tGravityAcc.std...Z"         "tBodyAccJerk.mean...X"      
+[16] "tBodyAccJerk.mean...Y"       "tBodyAccJerk.mean...Z"       "tBodyAccJerk.std...X"       
+[19] "tBodyAccJerk.std...Y"        "tBodyAccJerk.std...Z"        "tBodyGyro.mean...X"         
+[22] "tBodyGyro.mean...Y"          "tBodyGyro.mean...Z"          "tBodyGyro.std...X"          
+[25] "tBodyGyro.std...Y"           "tBodyGyro.std...Z"           "tBodyGyroJerk.mean...X"     
+[28] "tBodyGyroJerk.mean...Y"      "tBodyGyroJerk.mean...Z"      "tBodyGyroJerk.std...X"      
+[31] "tBodyGyroJerk.std...Y"       "tBodyGyroJerk.std...Z"       "tBodyAccMag.mean.."         
+[34] "tBodyAccMag.std.."           "tGravityAccMag.mean.."       "tGravityAccMag.std.."       
+[37] "tBodyAccJerkMag.mean.."      "tBodyAccJerkMag.std.."       "tBodyGyroMag.mean.."        
+[40] "tBodyGyroMag.std.."          "tBodyGyroJerkMag.mean.."     "tBodyGyroJerkMag.std.."     
+[43] "fBodyAcc.mean...X"           "fBodyAcc.mean...Y"           "fBodyAcc.mean...Z"          
+[46] "fBodyAcc.std...X"            "fBodyAcc.std...Y"            "fBodyAcc.std...Z"           
+[49] "fBodyAccJerk.mean...X"       "fBodyAccJerk.mean...Y"       "fBodyAccJerk.mean...Z"      
+[52] "fBodyAccJerk.std...X"        "fBodyAccJerk.std...Y"        "fBodyAccJerk.std...Z"       
+[55] "fBodyGyro.mean...X"          "fBodyGyro.mean...Y"          "fBodyGyro.mean...Z"         
+[58] "fBodyGyro.std...X"           "fBodyGyro.std...Y"           "fBodyGyro.std...Z"          
+[61] "fBodyAccMag.mean.."          "fBodyAccMag.std.."           "fBodyBodyAccJerkMag.mean.." 
+[64] "fBodyBodyAccJerkMag.std.."   "fBodyBodyGyroMag.mean.."     "fBodyBodyGyroMag.std.."     
+[67] "fBodyBodyGyroJerkMag.mean.." "fBodyBodyGyroJerkMag.std.." 
 
 ###附录：原始数据
 

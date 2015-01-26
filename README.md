@@ -26,7 +26,7 @@ run_analysis.R
 *该步骤已经在第一步的col.name设定中完成
 
 ###5.从第4步的数据集中，针对每个活动和每个主题使用每个表里的平均值建立第2个独立的整洁数据集。
-*将X_mean_std和y_activity_names合并
-*根据相同的y_activity_names计算原X_mean_std中每一个特征的平均值
+*将X_mean_std和y_activity_names，subject合并
+*根据每组相同的y_activity_names，subject计算原X_mean_std中每一个特征的平均值
 *最终结果存储在second_data_set中
 *将结果写出到second_data_set.txt文本文件中
