@@ -1,3 +1,4 @@
+library(reshape2)
 ##1.整合培训和测试集，创建一个数据集，并使用描述性变量名称恰当标记数据集。
 features <- read.table("./features.txt", stringsAsFactors = FALSE)
 subject_train <- read.table("./train/subject_train.txt")
